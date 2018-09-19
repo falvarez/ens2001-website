@@ -1,0 +1,60 @@
+;Programa cadenas.ens
+;Ejemplo ENS2001 - Abril 2002
+;Lectura de dos cadenas, concatenar y dar la vuelta
+;El programa pide al usuario que introduzca dos cadenas cualesquiera
+;A continuacion, las concatena, y muestra el resultado en pantalla al
+;derecho y al reves
+
+	;leer cadena1
+	wrstr /mens1
+	instr /cadena1
+	;leer cadena2
+	wrstr /mens2
+	instr /cadena2
+	;concatenar
+	move #cadena1,.r1
+	move #cadena2,.r2
+	move #resu1,.r0
+	move #resu2,.r3
+cad1:	cmp [.r1],#0
+	bz $cad2
+	move [.r1],[.r0]
+	inc .r0
+	inc .r1
+	br $cad1	
+cad2:	cmp [.r2],#0
+	bz $fin
+	move [.r2],[.r0]
+	inc .r0
+	inc .r2
+	br $cad2	
+fin:	move #0,[.r0]
+	;mostrar al derecho
+	wrstr /derecho
+	wrstr /resu1
+	wrstr /eol
+	;mostrar al reves
+	cmp .r0,#resu1
+	bz $fin2
+rev:	dec .r0
+	cmp [.r0],#0
+	bz $fin2
+	move [.r0],[.r3]
+	inc .r3
+	br $rev
+fin2:	move #0,[.r3]
+	wrstr /reves
+	wrstr /resu2
+	wrstr /eol
+	halt
+	;cadenas
+mens1:	data "Introduzca la primera cadena: "
+mens2:	data "Introduzca la segunda cadena: "
+derecho:data "Cadena al derecho: "
+reves:	data "Cadena al reves: "
+eol:	data "\n"
+cadena1:res 500
+cadena2:res 500
+resu1:	res 1000
+resu2:	res 1000
+	end

@@ -1,0 +1,65 @@
+;Programa maxmin.ens
+;Ejemplo ENS2001 - Abril 2002
+;Calculo del maximo y minimo de una lista de numeros enteros
+;El programa pide una lista de numeros que acabara cuando el
+;usuario introduzca un cero o bien un numero no valido
+;Para comparar numeros se sigue este criterio:
+;	r = a - b
+;	si r>0 -> si desbordamiento -> a < b
+;	       -> si no desbordamiento -> a > b
+;	si r<0 -> si desbordamiento -> a > b
+;	       -> si no desbordamiento -> a < b
+
+	;r1 almacenara el valor mayor
+	;r2 almacenara el valor menor
+	;r0 almacenara el valor leido
+	wrstr /prompt
+	
+	;lee el primero, si es cero ha terminado
+	inint .r0
+	move .r0,.r1
+	move .r0,.r2
+	cmp .r0,#0
+	bz $fin
+	
+	;lee numeros hasta encontrar un cero
+lectura:wrstr /prompt
+	inint .r0
+	cmp .r0,#0
+	bz $fin
+	
+	;si r0>r1 -> r0 es el mayor hasta ahora
+	cmp .r0,.r1
+	bn $signo11
+signo10:bnv $mayor
+	br $sig
+signo11:bv $mayor
+	
+	;si r0<r2 -> r0 es el menor hasta ahora
+sig:	cmp .r0,.r2
+	bn $signo21
+signo20:bv $menor
+	br $otro
+signo21:bnv $menor
+	
+	;leer otro numero
+otro:	br $lectura
+	;fin del programa
+	;muestra maximo y minimo
+fin:	wrstr /maximo
+	wrint .r1
+	wrstr /eol
+	wrstr /minimo
+	wrint .r2
+	wrstr /eol
+	halt
+mayor:	move .r0,.r1
+	br $sig
+menor:	move .r0,.r2
+	br $otro
+	;cadenas
+prompt:	data "Introduzca un numero: "
+maximo: data "El valor maximo introducido es "
+minimo: data "El valor minimo introducido es "
+eol:	data "\n"
+	end

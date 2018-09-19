@@ -1,0 +1,84 @@
+;Programa fact.ens
+;Ejemplo ENS2001 - Abril 2002
+;Adaptado del original para ENS96, por Raul Rodriguez Barrio (Octubre 1996)
+;El programa pide un entero, y a continuacion calcula el factorial y
+;lo muestra en pantalla.
+;Es necesario que la pila este configurada hacia direcciones decrecientes,
+;si no el ejemplo no funcionara correctamente.
+
+		; coloco el puntero de pila en la cima de la memoria
+			move #32767,.sp
+		; Escribo un mensaje y solicito un numero
+			wrstr /UN_NUMERO
+			inint .r1
+		; preparo el argumento de la funcion y la llamo
+			push .r1
+			call /SUB_FACT
+		; recupero el valor y lo trato segun lo que devolvio
+			pop .r2
+			cmp .r2,#0
+			bn /ERROR
+			wrstr /EL_FACT_ES
+			wrint .r2
+			halt
+ERROR:			cmp .r2, #COD_NEGATIVO
+			bz /ERROR1
+			wrstr /NUMERO_GRANDE
+			halt
+ERROR1: 		wrstr /NUMERO_NO_VALIDO
+			halt
+
+		; almacenamiento de la cadenas de caracteres con su referencias
+
+UN_NUMERO: 		data "\nUn numero: "
+NUMERO_NO_VALIDO: 	data "\nNumero no valido"
+NUMERO_GRANDE: 	  	data "\nNumero demasiado grande"
+EL_FACT_ES:		data "\nEl factorial es "
+
+COD_NEGATIVO:		equ -1
+COD_OVERFLOW:		equ -2
+
+
+; ************************************************************************
+; Rutina SUB_FACT
+;
+; 	Calcula el factorial de un numero que le viene en la pila
+;
+;
+; ************************************************************************
+
+		; salvo los registros en el marco de pila
+SUB_FACT:		push .iy
+			push .r1
+			push .r2
+		; coloco el marco de pila
+			move .sp, .iy
+		; recojo el argumento
+			move #5[.iy],.r1
+			cmp .r1,#0
+			bp /SIGUE1
+		; es negativo devuelvo un codigo de error de numero negativo.
+			move #COD_NEGATIVO,.r2
+			br /VOLVER
+ 		; valor no negativo
+SIGUE1:			bp /SIGUE2
+			move #1,.r2
+			br /VOLVER
+		 ; valor positivo en R1
+SIGUE2:			move #1,.r2
+SIGUEMUL:		mul .r2, .r1
+			bv /OVERFLOW
+			move .a, .r2
+			dec .r1
+			cmp .r1, #0
+			bz /VOLVER
+			br /SIGUEMUL
+		; se produjo overflow, devuelvo codigo de error de OVERFLOW
+OVERFLOW:		move #COD_OVERFLOW,.r2
+		; retorno  el valor en la misma posicion del argumento
+VOLVER:			move .r2, #5[.iy]
+		; restauro los valores y retorno
+			pop .r2
+			pop .r1
+			pop .iy
+			ret

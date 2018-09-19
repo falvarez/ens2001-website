@@ -1,0 +1,4 @@
+AuthUserFile /etc/htpasswd
+AuthType Basic
+AuthName "Zona de administración de ENS2001"
+require user ens2001_admin

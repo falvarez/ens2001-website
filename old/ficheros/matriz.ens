@@ -1,0 +1,113 @@
+;Programa matriz.ens
+;Ejemplo ENS2001 - Abril 2002
+;Adaptado del original para ENS96, por Raul Rodriguez Barrio (Octubre 1996)
+;Muestra un menu que ofrece opciones para manejar una matriz 5x5
+;1.Introducir un valor
+;2.Consultar un valor
+;3.Mostrar el contenido de la matriz
+;4.Salir
+
+nFilas:         	equ 6    ; número de filas de la matriz
+nColumnas:      	equ 5    ; número de columnas de la matriz
+nOpciones:      	equ 5    ; núm. de opciones
+opcAlmacenar:   	equ 1
+opcObtener:     	equ 2
+opcMostrar:     	equ 3
+opcSalir:       	equ 4
+
+        		move #0x7fff,.sp           ; inicializar la pila
+bucleGeneral:		call /funcMenu          
+        		move .r1, .r5           ; guardar la opcion en r5
+        		cmp .r5, #opcSalir       ; comprobar que es la opcion de salir
+        		bz /fin
+        		cmp .r5, #opcMostrar     ; comprobar que es la opcion de mostrar
+        		bz /opcion3
+        		call /solicitarPosicion ; solicitar par de posicion en la matriz
+        		cmp .r5 , #opcAlmacenar  ; comprobar si es opcion 1 o 2
+        		bnz /opcion2
+opcion1: 	        wrstr /sPedirValor      ; solicitar un valor
+        		inint .r3               
+        		call /ponerValor        ; colocar valor en la memoria
+        		br /bucleGeneral         
+opcion2:		call /dameValor         ; solicitar valor de la matriz
+        		wrstr /sDecirValor      ; sacar valor por pantalla
+        		wrint .r3
+        		br /bucleGeneral
+opcion3:		call /mostrarMatriz     ; llamar a procedimiento de mostrar matriz
+        		wrchar #13
+        		br /bucleGeneral
+fin:    		halt
+
+longAlmacenMatriz: 	equ 6*5
+dMatriz: 		res 30
+
+sRetCarro:      	data "\n"
+sAlmacenar:     	data "\n1 .- Amacenar valor"
+sObtener:       	data "\n2 .- Obtener valor"
+sMostrar:       	data "\n3 .- Escribir Matriz"
+sSalir:         	data "\n4 .- Salir"    
+sPedirOpcion:   	data "\n   Dame opcion:"
+sPedirFila:     	data "\n Dame número de fila: "
+sPedirColumna:  	data "\n Dame número de columna: "
+sDecirValor:    	data "\n El valor es "
+sPedirValor:    	data "\n Valor a almacenar: "
+
+funcMenu:  		wrstr /sRetCarro    
+           		wrstr /sAlmacenar
+           		wrstr /sObtener
+           		wrstr /sMostrar
+           		wrstr /sSalir
+           		wrstr /sPedirOpcion
+menuDeNuevo:		inchar .r1         ; lee la opcion
+           		sub .r1, #48      ; resta el valor ascii del '0'
+           		cmp .a,#1         ; comprueba límite inferior   
+           		bn /menuDeNuevo   ; si no valido repetir lectura
+           		cmp .a, #nOpciones ; comprueba límite superior
+           		bp /menuDeNuevo   ; si no valido repetir lectura   
+           		move .a, .r1      ; colocar salida en .r1
+           		ret
+
+solicitarPosicion: 	wrstr /sPedirFila      ; mensaje de solicitud
+           		inint .r1
+           		cmp .r1, #1             ; comprueba límite inferior
+           		bn /solicitarPosicion  ; si no valido repetir
+           		cmp .r1, #nFilas        ; comprueba límite superior
+           		bp /solicitarPosicion  ; si no valido repetir
+otraColumna:		wrstr /sPedirColumna   ; mensaje de solicitud
+           		inint .r2
+           		cmp .r2, #1             ; comprueba límite inferior
+           		bn /otraColumna        ; si no valido repetir
+           		cmp .r2, #nColumnas     ; comprueba límite superior
+           		bp /otraColumna        ; si no valido repetir
+           		ret
+
+dameValor:		dec .r2
+           		dec .r1
+           		mul .r1, #nColumnas
+           		add .a, .r2
+           		add .a, #dMatriz
+           		move .a, .ix
+           		move #0[.ix],.r3
+           		ret
+ponerValor:		dec .r2
+           		dec .r1
+           		mul .r1, #nColumnas
+           		add .a, .r2
+           		add .a, #dMatriz
+           		move .a, .ix
+           		move .r3, #0[.ix]
+           		ret 
+mostrarMatriz:		move #nFilas,.r1
+           		move #dMatriz,.ix
+		        wrstr /sRetCarro
+otraFila:		move #0,.r2
+sigueFila: 		wrint #0[.ix]
+           		inc .r2
+           		inc .ix
+           		wrchar #32
+           		cmp .r2, #nColumnas
+           		bnz /sigueFila
+           		wrstr /sRetCarro
+           		dec .r1
+           		bnz /otraFila
+           		ret
