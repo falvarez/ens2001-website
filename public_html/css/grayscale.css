@@ -320,12 +320,13 @@ a:focus {
     -webkit-transition: all .3s ease-in-out;
     -moz-transition: all .3s ease-in-out;
     transition: all .3s ease-in-out;
+    margin-bottom: 0.3em;
 }
 
 .btn-default {
     border: 1px solid #42dca3;
     color: #42dca3;
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .btn-default:hover,
