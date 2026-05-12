@@ -1,4 +1,25 @@
-.PHONY: dev open phpstorm run wait check_docker
+# Configuración de carpetas
+SRC_CSS = public_html/css/bootstrap.min.css public_html/css/grayscale.css public_html/css/google-fonts.css public_html/css/font-awesome.css
+SRC_JS  = public_html/js/jquery.js public_html/js/bootstrap.min.js public_html/js/jquery.easing.min.js public_html/js/grayscale.js
+
+DIST_CSS = public_html/css/bundle.min.css
+DIST_JS  = public_html/js/bundle.min.js
+
+# Comando base de Docker
+DOCKER_CMD = docker run --rm -v "$(shell pwd)":/work -w /work node:alpine
+
+.PHONY: bundle clean dev open phpstorm run wait check_docker
+
+bundle:
+	@echo "Combining and minifying CSS..."
+	@$(DOCKER_CMD) sh -c "cat $(SRC_CSS) | npx esbuild --minify --loader=css" > $(DIST_CSS)
+
+	@echo "Combining and minifying JS..."
+	@$(DOCKER_CMD) sh -c "cat $(SRC_JS) | npx esbuild --minify" > $(DIST_JS)
+	@echo "Work done! Files generated at $(DIST_CSS) and $(DIST_JS)"
+
+clean:
+	rm -f $(DIST_CSS) $(DIST_JS)
 
 dev: phpstorm run wait
 
