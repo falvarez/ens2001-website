@@ -6,12 +6,12 @@
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
         <loc>https://ens2001.falvarez.es/</loc>
-        <lastmod>2024-08-09T06:57:45+00:00</lastmod>
+        <lastmod>2026-05-12T20:15:00+00:00</lastmod>
         <priority>1.00</priority>
     </url>
     <url>
         <loc>https://ens2001.falvarez.es/changelog.html</loc>
-        <lastmod>2024-08-09T06:57:44+00:00</lastmod>
+        <lastmod>2026-05-12T20:15:00+00:00</lastmod>
         <priority>0.80</priority>
     </url>
     <url>
@@ -26,7 +26,7 @@
     </url>
     <url>
         <loc>https://ens2001.falvarez.es/files/Presentacion-ENS2001.ppt.pdf</loc>
-        <lastmod>2026-05-12T18:59:00+00:00</lastmod>
+        <lastmod>2026-05-12T20:15:00+00:00</lastmod>
         <priority>0.80</priority>
     </url>
 </urlset>
