@@ -8,7 +8,7 @@ DIST_JS  = public_html/js/bundle.min.js
 # Comando base de Docker
 DOCKER_CMD = docker run --rm -v "$(shell pwd)":/work -w /work node:alpine
 
-.PHONY: bundle clean dev open phpstorm run wait check_docker
+.PHONY: bundle clean dev open phpstorm run wait check_orbstack
 
 bundle:
 	@echo "Combining and minifying CSS..."
@@ -28,7 +28,7 @@ open: run wait
 phpstorm:
 	phpstorm ${PWD}
 
-run: check_docker
+run: check_orbstack
 	docker run --rm -it -v ${PWD}/public_html:/usr/share/nginx/html:ro -p 8000:80 nginx
 
 wait:
@@ -37,19 +37,14 @@ wait:
 	done
 	open "http://localhost:8000"
 
-check_docker:
-	@if ! docker info > /dev/null 2>&1; then \
-		echo "Docker is not running. Attempting to start Docker..."; \
-		if [ "$$(uname)" = "Darwin" ]; then \
-			open -g -a Docker; \
-			echo "Waiting for Docker to start..."; \
-			while ! docker info > /dev/null 2>&1; do \
-				sleep 1; \
-			done; \
-		else \
-			echo "Unsupported OS. Please start Docker manually."; \
-			exit 1; \
-		fi; \
+check_orbstack:
+	@if ! orbctl status 2>&1 | grep -q "Running"; then \
+		echo "OrbStack is not running. Starting OrbStack..."; \
+		orbctl start; \
+		echo "Waiting for OrbStack to start..."; \
+		while ! docker info > /dev/null 2>&1; do \
+			sleep 1; \
+		done; \
 	fi
 
 MAKEFLAGS += -j
